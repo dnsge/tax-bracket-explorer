@@ -1,5 +1,5 @@
-import React from 'react';
-import { TaxBracket, TaxBreakdown } from './Tax';
+import React from "react";
+import { TaxBracket, TaxBreakdown } from "./Tax";
 
 // Visualization Component
 interface TaxVisualizerProps {
@@ -31,7 +31,7 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
         taxable: taxableInBracket,
         tax: taxInBracket,
         takeHome,
-        rate: bracket.rate
+        rate: bracket.rate,
       });
     }
 
@@ -39,11 +39,11 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
   };
 
   const { totalTax, breakdowns } = calculateTaxes();
-  const maxIncome = Math.max(income, ...brackets.map(b => b.min)) * 1.2;
+  const maxIncome = Math.max(income, ...brackets.map((b) => b.min)) * 1.2;
 
-  const ticks = brackets.map(b => ({
+  const ticks = brackets.map((b) => ({
     position: (b.min / maxIncome) * 100,
-    label: `$${b.min.toLocaleString()}`
+    label: `$${b.min.toLocaleString()}`,
   }));
 
   console.log(JSON.stringify(breakdowns));
@@ -66,18 +66,31 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
             {breakdowns.map((breakdown, index) => (
               <tr key={index}>
                 <td className="border p-2">
-                  ${breakdown.min.toLocaleString()} - ${breakdown.max === Infinity ? '∞' : breakdown.max.toLocaleString()}
+                  ${breakdown.min.toLocaleString()} - $
+                  {breakdown.max === Infinity
+                    ? "∞"
+                    : breakdown.max.toLocaleString()}
                 </td>
                 <td className="border p-2">{breakdown.rate}%</td>
-                <td className="border p-2">${breakdown.taxable.toLocaleString()}</td>
-                <td className="border p-2">${breakdown.tax.toLocaleString()}</td>
-                <td className="border p-2">${breakdown.takeHome.toLocaleString()}</td>
+                <td className="border p-2">
+                  ${breakdown.taxable.toLocaleString()}
+                </td>
+                <td className="border p-2">
+                  ${breakdown.tax.toLocaleString()}
+                </td>
+                <td className="border p-2">
+                  ${breakdown.takeHome.toLocaleString()}
+                </td>
               </tr>
             ))}
             <tr className="font-bold">
-              <td colSpan={3} className="border p-2 text-right">Totals:</td>
+              <td colSpan={3} className="border p-2 text-right">
+                Totals:
+              </td>
               <td className="border p-2">${totalTax.toLocaleString()}</td>
-              <td className="border p-2">${(income - totalTax).toLocaleString()}</td>
+              <td className="border p-2">
+                ${(income - totalTax).toLocaleString()}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -86,13 +99,14 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-4">Visualization</h2>
         <div className="relative">
-          <div className="w-full h-20 flex" style={{ backgroundColor: '#eee' }}>
+          <div className="w-full h-20 flex" style={{ backgroundColor: "#eee" }}>
             {breakdowns.map((breakdown, index) => {
               const width = ((breakdown.max - breakdown.min) / maxIncome) * 100;
-              const taxWidth = (breakdown.taxable) / (breakdown.max - breakdown.min) * 100;
+              const taxWidth =
+                (breakdown.taxable / (breakdown.max - breakdown.min)) * 100;
               const taxHeight = (breakdown.rate / 100) * 100;
               const showRightBorder = taxWidth < 100;
-              console.log(index, {width, taxWidth, taxHeight});
+              console.log(index, { width, taxWidth, taxHeight });
               return (
                 <div
                   key={index}
@@ -100,15 +114,27 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
                   style={{ width: `${width}%` }}
                 >
                   <div
-                    className={"absolute top-0 w-full bg-yellow-300" + (showRightBorder ? " border-black border-r" : "")}
+                    className={
+                      "absolute top-0 w-full bg-yellow-300" +
+                      (showRightBorder ? " border-black border-r" : "")
+                    }
                     style={{ width: `${taxWidth}%`, height: `${taxHeight}%` }}
                   />
                   <div
-                    className={"absolute bottom-0 w-full bg-green-500" + (showRightBorder ? " border-black border-r" : "")}
-                    style={{ width: `${taxWidth}%`, height: `${100 - taxHeight}%` }}
+                    className={
+                      "absolute bottom-0 w-full bg-green-500" +
+                      (showRightBorder ? " border-black border-r" : "")
+                    }
+                    style={{
+                      width: `${taxWidth}%`,
+                      height: `${100 - taxHeight}%`,
+                    }}
                   />
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 bg-black text-white p-2 rounded text-sm whitespace-nowrap z-10">
-                    Range: ${breakdown.min.toLocaleString()} - ${breakdown.max === Infinity ? '∞' : breakdown.max.toLocaleString()}
+                    Range: ${breakdown.min.toLocaleString()} - $
+                    {breakdown.max === Infinity
+                      ? "∞"
+                      : breakdown.max.toLocaleString()}
                     <br />
                     Rate: {breakdown.rate}%
                     <br />

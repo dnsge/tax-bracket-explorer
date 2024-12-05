@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { TaxBracket } from './Tax'
-import TaxSettings from './TaxSettings';
-import TaxVisualizer from './TaxVisualizer';
-
+import { useState } from "react";
+import { TaxBracket } from "./Tax";
+import TaxSettings from "./TaxSettings";
+import TaxVisualizer from "./TaxVisualizer";
 
 // Main Container Component
 const TaxBracketVisualizer = () => {
@@ -21,19 +20,13 @@ const TaxBracketVisualizer = () => {
         onBracketsChange={setBrackets}
         onIncomeChange={setIncome}
       />
-      <TaxVisualizer
-        brackets={brackets}
-        income={income}
-      />
+      <TaxVisualizer brackets={brackets} income={income} />
     </div>
   );
 };
 
-
 function App() {
-  return (
-    <TaxBracketVisualizer />
-  )
+  return <TaxBracketVisualizer />;
 }
 
-export default App
+export default App;

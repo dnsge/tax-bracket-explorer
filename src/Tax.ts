@@ -1,4 +1,3 @@
-
 export interface TaxBracket {
   min: number;
   rate: number;

@@ -20,13 +20,14 @@ export const TAX_PRESETS: TaxPresetConfig[] = [
       { min: 100525, rate: 24 },
       { min: 191950, rate: 32 },
       { min: 243725, rate: 35 },
-      { min: 609350, rate: 37 }
-    ]
+      { min: 609350, rate: 37 },
+    ],
   },
   {
     id: "us-federal-2024-married",
     name: "US Federal 2024 (Married)",
-    description: "US Federal Income Tax Brackets for 2024 (Married Filing Jointly)",
+    description:
+      "US Federal Income Tax Brackets for 2024 (Married Filing Jointly)",
     brackets: [
       { min: 0, rate: 10 },
       { min: 23200, rate: 12 },
@@ -34,13 +35,13 @@ export const TAX_PRESETS: TaxPresetConfig[] = [
       { min: 201050, rate: 24 },
       { min: 383900, rate: 32 },
       { min: 487450, rate: 35 },
-      { min: 731200, rate: 37 }
-    ]
+      { min: 731200, rate: 37 },
+    ],
   },
   {
     id: "custom",
     name: "Custom",
     description: "Custom tax brackets",
-    brackets: []
-  }
+    brackets: [],
+  },
 ];
