@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { formatCurrency, TaxBracket } from "./Tax";
 import { TAX_PRESETS } from "./TaxPresets";
 
@@ -60,11 +60,17 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
     onBracketsChange(newBrackets);
   };
 
+  const detailsRef = useRef<HTMLDetailsElement>(null);
   const handlePresetChange = (presetId: string) => {
     setSelectedPreset(presetId);
     const preset = TAX_PRESETS.find((p) => p.id === presetId);
     if (preset && presetId !== "custom") {
       onBracketsChange(preset.brackets);
+    }
+    if (presetId === "custom") {
+      if (detailsRef.current) {
+        detailsRef.current.open = true;
+      }
     }
   };
 
@@ -94,87 +100,90 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
               </p>
             )}
           </div>
-          <table className="mt-4 w-full">
-            <thead>
-              <tr className="text-left">
-                <th className="p-2">Minimum</th>
-                <th className="p-2">Rate</th>
-                {selectedPreset === "custom" && (
-                  <th className="p-2">Actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {brackets.map((bracket, index) => (
-                <tr key={index} className="border-t">
-                  <td className="p-2">{formatCurrency(bracket.min)}</td>
-                  <td className="p-2">
-                    {selectedPreset === "custom" ? (
-                      <input
-                        type="number"
-                        value={bracket.rate}
-                        onChange={(e) =>
-                          updateBracketRate(index, Number(e.target.value))
-                        }
-                        min="0"
-                        max="100"
-                        className="text-sm border p-2 rounded w-20"
-                      />
-                    ) : (
-                      bracket.rate
-                    )}
-                    %
-                  </td>
+          <details className="mt-4 w-full" ref={detailsRef}>
+            <summary>Bracket ranges</summary>
+            <table className="w-full">
+              <thead>
+                <tr className="text-left">
+                  <th className="p-2">Minimum</th>
+                  <th className="p-2">Rate</th>
                   {selectedPreset === "custom" && (
-                    <td className="p-2">
-                      {index > 0 && (
-                        <button
-                          onClick={() => removeBracket(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </td>
+                    <th className="p-2">Actions</th>
                   )}
                 </tr>
-              ))}
-              {selectedPreset === "custom" && (
-                <tr key={"add"} className="border-t">
-                  <td className="p-2">
-                    <input
-                      type="number"
-                      value={newMin}
-                      onChange={(e) => setNewMin(e.target.value)}
-                      min="0"
-                      placeholder="Minimum Income"
-                      className="text-sm border p-2 rounded"
-                    />
-                  </td>
-                  <td className="p-2">
-                    <input
-                      type="number"
-                      value={newRate}
-                      onChange={(e) => setNewRate(e.target.value)}
-                      min="0"
-                      max="100"
-                      placeholder="Tax Rate"
-                      className="text-sm border p-2 rounded w-32"
-                    />
-                    %
-                  </td>
-                  <td className="p-2">
-                    <button
-                      onClick={addBracket}
-                      className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded"
-                    >
-                      Add Bracket
-                    </button>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {brackets.map((bracket, index) => (
+                  <tr key={index} className="border-t">
+                    <td className="p-2">{formatCurrency(bracket.min)}</td>
+                    <td className="p-2">
+                      {selectedPreset === "custom" ? (
+                        <input
+                          type="number"
+                          value={bracket.rate}
+                          onChange={(e) =>
+                            updateBracketRate(index, Number(e.target.value))
+                          }
+                          min="0"
+                          max="100"
+                          className="text-sm border p-2 rounded w-20"
+                        />
+                      ) : (
+                        bracket.rate
+                      )}
+                      %
+                    </td>
+                    {selectedPreset === "custom" && (
+                      <td className="p-2">
+                        {index > 0 && (
+                          <button
+                            onClick={() => removeBracket(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+                {selectedPreset === "custom" && (
+                  <tr key={"add"} className="border-t">
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        value={newMin}
+                        onChange={(e) => setNewMin(e.target.value)}
+                        min="0"
+                        placeholder="Minimum Income"
+                        className="text-sm border p-2 rounded"
+                      />
+                    </td>
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        value={newRate}
+                        onChange={(e) => setNewRate(e.target.value)}
+                        min="0"
+                        max="100"
+                        placeholder="Tax Rate"
+                        className="text-sm border p-2 rounded w-32"
+                      />
+                      %
+                    </td>
+                    <td className="p-2">
+                      <button
+                        onClick={addBracket}
+                        className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded"
+                      >
+                        Add Bracket
+                      </button>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </details>
         </div>
 
         <div className="mt-6 grow-[1] w-4/12">
