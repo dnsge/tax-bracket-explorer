@@ -7,44 +7,51 @@ interface TaxVisualizerProps {
   income: number;
 }
 
+const calculateTaxes = (brackets: TaxBracket[], income: number) => {
+  let totalTax = 0;
+  const breakdowns: TaxBreakdown[] = [];
+
+  for (let i = 0; i < brackets.length; i++) {
+    const bracket = brackets[i];
+    const nextBracketMin = brackets[i + 1]?.min || Infinity;
+    const bracketMax = Math.min(nextBracketMin, income);
+    const bracketMin = bracket.min;
+
+    if (income <= bracketMin) break;
+
+    const taxableInBracket = Math.max(0, bracketMax - bracketMin);
+    const taxInBracket = taxableInBracket * (bracket.rate / 100);
+    const takeHome = taxableInBracket - taxInBracket;
+
+    totalTax += taxInBracket;
+    breakdowns.push({
+      min: bracketMin,
+      max: nextBracketMin,
+      taxable: taxableInBracket,
+      tax: taxInBracket,
+      takeHome,
+      rate: bracket.rate,
+    });
+  }
+
+  return { totalTax, breakdowns };
+};
+
 const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
-  const calculateTaxes = () => {
-    let totalTax = 0;
-    const breakdowns: TaxBreakdown[] = [];
+  const maxIncome = income * 1.2;
+  // const maxIncome = Math.max(income, ...brackets.map((b) => b.min)) * 1.2;
 
-    for (let i = 0; i < brackets.length; i++) {
-      const bracket = brackets[i];
-      const nextBracketMin = brackets[i + 1]?.min || Infinity;
-      const bracketMax = Math.min(nextBracketMin, income);
-      const bracketMin = bracket.min;
+  const visibleBrackets = brackets.filter((b) => b.min <= maxIncome);
+  const { totalTax, breakdowns } = calculateTaxes(visibleBrackets, income);
 
-      if (income <= bracketMin) break;
-
-      const taxableInBracket = Math.max(0, bracketMax - bracketMin);
-      const taxInBracket = taxableInBracket * (bracket.rate / 100);
-      const takeHome = taxableInBracket - taxInBracket;
-
-      totalTax += taxInBracket;
-      breakdowns.push({
-        min: bracketMin,
-        max: nextBracketMin,
-        taxable: taxableInBracket,
-        tax: taxInBracket,
-        takeHome,
-        rate: bracket.rate,
-      });
-    }
-
-    return { totalTax, breakdowns };
-  };
-
-  const { totalTax, breakdowns } = calculateTaxes();
-  const maxIncome = Math.max(income, ...brackets.map((b) => b.min)) * 1.2;
-
-  const ticks = brackets.map((b) => ({
+  const ticks = visibleBrackets.map((b) => ({
     position: (b.min / maxIncome) * 100,
     label: formatCurrency(b.min),
   }));
+  ticks.push({
+    position: (income / maxIncome) * 100,
+    label: formatCurrency(income),
+  });
 
   return (
     <div>
@@ -95,9 +102,10 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
         <div className="relative">
           <div className="w-full h-20 flex" style={{ backgroundColor: "#eee" }}>
             {breakdowns.map((breakdown, index) => {
-              const width = ((breakdown.max - breakdown.min) / maxIncome) * 100;
+              const effectiveMax = Math.min(breakdown.max, maxIncome);
+              const width = ((effectiveMax - breakdown.min) / maxIncome) * 100;
               const taxWidth =
-                (breakdown.taxable / (breakdown.max - breakdown.min)) * 100;
+                (breakdown.taxable / (effectiveMax - breakdown.min)) * 100;
               const taxHeight = (breakdown.rate / 100) * 100;
               const showRightBorder = taxWidth < 100;
               return (
