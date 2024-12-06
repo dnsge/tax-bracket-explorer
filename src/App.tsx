@@ -21,6 +21,11 @@ const TaxBracketVisualizer = () => {
         onIncomeChange={setIncome}
       />
       <TaxVisualizer brackets={brackets} income={income} />
+      <p className="text-sm">
+        This is a helpful tool for exploring and visualizing different taxation
+        scenarios; don't use this for your taxes without verifying the results
+        yourself.
+      </p>
     </div>
   );
 };

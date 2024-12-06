@@ -75,7 +75,7 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
               <th className="border p-2 text-left">Rate</th>
               <th className="border p-2 text-left">Taxable Amount</th>
               <th className="border p-2 text-left">Tax Paid</th>
-              <th className="border p-2 text-left">Take Home</th>
+              <th className="border p-2 text-left">Left Over</th>
             </tr>
           </thead>
           <tbody>

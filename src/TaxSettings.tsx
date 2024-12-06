@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { formatCurrency, TaxBracket } from "./Tax";
-import { TAX_PRESETS } from "./TaxPresets";
+import { TAX_GROUPS, TAX_PRESETS, TaxPresetConfig } from "./TaxPresets";
 
 interface TaxSettingsProps {
   brackets: TaxBracket[];
@@ -17,7 +17,8 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
 }) => {
   const [newMin, setNewMin] = useState<string>("");
   const [newRate, setNewRate] = useState<string>("");
-  const [selectedPreset, setSelectedPreset] = useState<string>("custom");
+  const [selectedPreset, setSelectedPreset] =
+    useState<string>("us-federal-2024");
 
   const addBracket = () => {
     if (!newMin || !newRate) return;
@@ -74,6 +75,13 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
     }
   };
 
+  const optionsForTaxPresets = (entries: TaxPresetConfig[]) =>
+    entries.map((preset) => (
+      <option key={preset.id} value={preset.id}>
+        {preset.name}
+      </option>
+    ));
+
   return (
     <div className="mb-6">
       <div className="flex flex-wrap gap-8">
@@ -88,11 +96,15 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
               onChange={(e) => handlePresetChange(e.target.value)}
               className="w-full border p-2 rounded mb-2"
             >
-              {TAX_PRESETS.map((preset) => (
-                <option key={preset.id} value={preset.id}>
-                  {preset.name}
-                </option>
-              ))}
+              {Object.entries(TAX_GROUPS).map(([group, entries]) =>
+                group === "" ? (
+                  optionsForTaxPresets(entries)
+                ) : (
+                  <optgroup key={group} label={group}>
+                    {optionsForTaxPresets(entries)}
+                  </optgroup>
+                )
+              )}
             </select>
             {selectedPreset !== "custom" && (
               <p className="text-sm text-gray-600 mb-2">
