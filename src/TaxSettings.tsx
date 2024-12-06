@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatCurrency, TaxBracket } from "./Tax";
 import { TAX_GROUPS, TAX_PRESETS, TaxPresetConfig } from "./TaxPresets";
 
 interface TaxSettingsProps {
+  defaultPreset: string;
   brackets: TaxBracket[];
   income: number;
   onBracketsChange: (brackets: TaxBracket[]) => void;
@@ -10,6 +11,7 @@ interface TaxSettingsProps {
 }
 
 const TaxSettings: React.FC<TaxSettingsProps> = ({
+  defaultPreset,
   brackets,
   income,
   onBracketsChange,
@@ -17,8 +19,7 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
 }) => {
   const [newMin, setNewMin] = useState<string>("");
   const [newRate, setNewRate] = useState<string>("");
-  const [selectedPreset, setSelectedPreset] =
-    useState<string>("us-federal-2024");
+  const [selectedPreset, setSelectedPreset] = useState<string>(defaultPreset);
 
   const addBracket = () => {
     if (!newMin || !newRate) return;
@@ -82,15 +83,18 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
       </option>
     ));
 
+  // Trigger preset change on start
+  useEffect(() => {
+    handlePresetChange(defaultPreset);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="mb-6">
       <div className="flex flex-wrap gap-8">
         <div className="mt-4 grow-[3]">
           <h2 className="text-xl font-bold mb-2">Tax Brackets</h2>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Tax Configuration
-            </label>
             <select
               value={selectedPreset}
               onChange={(e) => handlePresetChange(e.target.value)}
