@@ -180,7 +180,7 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
         <div className="mt-6 grow-[1] w-4/12">
           <h2 className="text-xl font-bold mb-2">Your Income</h2>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Annual Income To Be Taxed
+            Taxable Income (as defined by IRS)
           </label>
           <span className="text-lg">
             $
