@@ -120,7 +120,7 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
               const taxWidth =
                 (breakdown.taxable / (effectiveMax - breakdown.min)) * 100;
               const taxHeight = (breakdown.rate / 100) * 100;
-              const showRightBorder = taxWidth < 100;
+              const showRightBorder = index === breakdowns.length - 1;
               return (
                 <div
                   key={index}
