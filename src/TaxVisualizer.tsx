@@ -34,15 +34,18 @@ const calculateTaxes = (brackets: TaxBracket[], income: number) => {
     });
   }
 
-  return { totalTax, breakdowns };
+  const effectiveRate = totalTax / income;
+
+  return { totalTax, effectiveRate, breakdowns };
 };
 
 const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
   const maxIncome = income * 1.2;
-  // const maxIncome = Math.max(income, ...brackets.map((b) => b.min)) * 1.2;
-
   const visibleBrackets = brackets.filter((b) => b.min <= maxIncome);
-  const { totalTax, breakdowns } = calculateTaxes(visibleBrackets, income);
+  const { totalTax, effectiveRate, breakdowns } = calculateTaxes(
+    visibleBrackets,
+    income
+  );
 
   const calculateTicks = () => {
     const rawTicks = visibleBrackets.map((b) => ({
@@ -96,7 +99,9 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
               <td colSpan={3} className="border p-2 text-right">
                 Totals:
               </td>
-              <td className="border p-2">{formatCurrency(totalTax)}</td>
+              <td className="border p-2">
+                {formatCurrency(totalTax)} ({(effectiveRate * 100).toFixed(2)}%)
+              </td>
               <td className="border p-2">
                 {formatCurrency(income - totalTax)}
               </td>
@@ -124,7 +129,7 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
                 >
                   <div
                     className={
-                      "absolute top-0 w-full bg-yellow-300" +
+                      "absolute top-0 w-full bg-red-400" +
                       (showRightBorder ? " border-black border-r" : "")
                     }
                     style={{ width: `${taxWidth}%`, height: `${taxHeight}%` }}
