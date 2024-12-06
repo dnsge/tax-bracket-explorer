@@ -44,14 +44,22 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
   const visibleBrackets = brackets.filter((b) => b.min <= maxIncome);
   const { totalTax, breakdowns } = calculateTaxes(visibleBrackets, income);
 
-  const ticks = visibleBrackets.map((b) => ({
-    position: (b.min / maxIncome) * 100,
-    label: formatCurrency(b.min),
-  }));
-  ticks.push({
-    position: (income / maxIncome) * 100,
-    label: formatCurrency(income),
-  });
+  const calculateTicks = () => {
+    const rawTicks = visibleBrackets.map((b) => ({
+      position: (b.min / maxIncome) * 100,
+      label: formatCurrency(b.min),
+    }));
+
+    rawTicks.push({
+      position: (income / maxIncome) * 100,
+      label: formatCurrency(income),
+    });
+
+    rawTicks.sort((a, b) => a.position - b.position);
+    return rawTicks;
+  };
+
+  const ticks = calculateTicks();
 
   return (
     <div>
@@ -146,7 +154,7 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
             })}
           </div>
 
-          <div className="relative h-8 w-full border-t">
+          <div className="relative h-1 w-full border-t">
             {ticks.map((tick, index) => (
               <div
                 key={index}
@@ -154,9 +162,22 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
                 style={{ left: `${tick.position}%` }}
               >
                 <div className="h-2 w-px bg-gray-400" />
-                <div className="text-sm text-gray-600 mt-1 whitespace-nowrap">
-                  {tick.label}
-                </div>
+              </div>
+            ))}
+          </div>
+          <div className="relative h-24 w-full">
+            {ticks.map((tick, index) => (
+              <div
+                key={index}
+                className="absolute text-sm text-gray-600 mt-1 whitespace-nowrap"
+                style={{
+                  top: 0,
+                  left: `${tick.position}%`,
+                  transform: `translateX(-100%) rotate(-90deg)`,
+                  transformOrigin: "right",
+                }}
+              >
+                {tick.label}
               </div>
             ))}
           </div>
