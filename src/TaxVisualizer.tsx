@@ -152,7 +152,7 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
                     <br />
                     Tax: {formatCurrency(breakdown.tax)}
                     <br />
-                    Take Home: {formatCurrency(breakdown.takeHome)}
+                    Left Over: {formatCurrency(breakdown.takeHome)}
                   </div>
                 </div>
               );
