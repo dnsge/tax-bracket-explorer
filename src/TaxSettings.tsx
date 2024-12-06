@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TaxBracket } from "./Tax";
+import { formatCurrency, TaxBracket } from "./Tax";
 import { TAX_PRESETS } from "./TaxPresets";
 
 interface TaxSettingsProps {
@@ -21,11 +21,22 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
 
   const addBracket = () => {
     if (!newMin || !newRate) return;
-    const min = parseFloat(newMin);
+    const inputMin = parseFloat(newMin);
     const rate = parseFloat(newRate);
 
-    if (isNaN(min) || isNaN(rate)) return;
+    if (isNaN(inputMin) || isNaN(rate)) return;
     if (rate < 0 || rate > 100) return;
+
+    const min = Math.floor(inputMin * 100) / 100; // Floor to cent
+
+    if (brackets.findIndex((b) => b.min === min) !== -1) {
+      alert(
+        `A tax bracket with minimum income of ${formatCurrency(
+          min
+        )} already exists`
+      );
+      return;
+    }
 
     const newBrackets = [...brackets, { min, rate }].sort(
       (a, b) => a.min - b.min
@@ -96,7 +107,7 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
             <tbody>
               {brackets.map((bracket, index) => (
                 <tr key={index} className="border-t">
-                  <td className="p-2">${bracket.min.toLocaleString()}</td>
+                  <td className="p-2">{formatCurrency(bracket.min)}</td>
                   <td className="p-2">
                     {selectedPreset === "custom" ? (
                       <input
@@ -137,7 +148,7 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
                       onChange={(e) => setNewMin(e.target.value)}
                       min="0"
                       placeholder="Minimum Income"
-                      className="text-sm border p-2 rounded w-32"
+                      className="text-sm border p-2 rounded"
                     />
                   </td>
                   <td className="p-2">
@@ -148,14 +159,14 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
                       min="0"
                       max="100"
                       placeholder="Tax Rate"
-                      className="text-sm border p-2 rounded w-20"
+                      className="text-sm border p-2 rounded w-32"
                     />
                     %
                   </td>
                   <td className="p-2">
                     <button
                       onClick={addBracket}
-                      className="text-sm bg-blue-500 text-white px-4 py-2 rounded"
+                      className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded"
                     >
                       Add Bracket
                     </button>
@@ -166,18 +177,21 @@ const TaxSettings: React.FC<TaxSettingsProps> = ({
           </table>
         </div>
 
-        <div className="mt-6 grow-[1]">
+        <div className="mt-6 grow-[1] w-4/12">
           <h2 className="text-xl font-bold mb-2">Your Income</h2>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Annual Income To Be Taxed
           </label>
-          $
-          <input
-            type="number"
-            value={income}
-            onChange={(e) => onIncomeChange(Number(e.target.value))}
-            className="text-sm border p-2 rounded"
-          />
+          <span className="text-lg">
+            $
+            <input
+              type="number"
+              value={income}
+              min="0"
+              onChange={(e) => onIncomeChange(Number(e.target.value))}
+              className="border p-2 rounded"
+            />
+          </span>
         </div>
       </div>
     </div>

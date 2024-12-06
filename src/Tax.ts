@@ -11,3 +11,12 @@ export interface TaxBreakdown {
   takeHome: number;
   rate: number;
 }
+
+export const formatCurrency = (amount: number) =>
+  amount === Infinity
+    ? "$∞"
+    : amount.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 2,
+      });

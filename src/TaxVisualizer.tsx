@@ -1,5 +1,5 @@
 import React from "react";
-import { TaxBracket, TaxBreakdown } from "./Tax";
+import { formatCurrency, TaxBracket, TaxBreakdown } from "./Tax";
 
 // Visualization Component
 interface TaxVisualizerProps {
@@ -43,10 +43,8 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
 
   const ticks = brackets.map((b) => ({
     position: (b.min / maxIncome) * 100,
-    label: `$${b.min.toLocaleString()}`,
+    label: formatCurrency(b.min),
   }));
-
-  console.log(JSON.stringify(breakdowns));
 
   return (
     <div>
@@ -66,20 +64,16 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
             {breakdowns.map((breakdown, index) => (
               <tr key={index}>
                 <td className="border p-2">
-                  ${breakdown.min.toLocaleString()} - $
-                  {breakdown.max === Infinity
-                    ? "∞"
-                    : breakdown.max.toLocaleString()}
+                  {formatCurrency(breakdown.min)} -{" "}
+                  {formatCurrency(breakdown.max)}
                 </td>
                 <td className="border p-2">{breakdown.rate}%</td>
                 <td className="border p-2">
-                  ${breakdown.taxable.toLocaleString()}
+                  {formatCurrency(breakdown.taxable)}
                 </td>
+                <td className="border p-2">{formatCurrency(breakdown.tax)}</td>
                 <td className="border p-2">
-                  ${breakdown.tax.toLocaleString()}
-                </td>
-                <td className="border p-2">
-                  ${breakdown.takeHome.toLocaleString()}
+                  {formatCurrency(breakdown.takeHome)}
                 </td>
               </tr>
             ))}
@@ -87,9 +81,9 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
               <td colSpan={3} className="border p-2 text-right">
                 Totals:
               </td>
-              <td className="border p-2">${totalTax.toLocaleString()}</td>
+              <td className="border p-2">{formatCurrency(totalTax)}</td>
               <td className="border p-2">
-                ${(income - totalTax).toLocaleString()}
+                {formatCurrency(income - totalTax)}
               </td>
             </tr>
           </tbody>
@@ -106,7 +100,6 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
                 (breakdown.taxable / (breakdown.max - breakdown.min)) * 100;
               const taxHeight = (breakdown.rate / 100) * 100;
               const showRightBorder = taxWidth < 100;
-              console.log(index, { width, taxWidth, taxHeight });
               return (
                 <div
                   key={index}
@@ -131,16 +124,14 @@ const TaxVisualizer: React.FC<TaxVisualizerProps> = ({ brackets, income }) => {
                     }}
                   />
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 bg-black text-white p-2 rounded text-sm whitespace-nowrap z-10">
-                    Range: ${breakdown.min.toLocaleString()} - $
-                    {breakdown.max === Infinity
-                      ? "∞"
-                      : breakdown.max.toLocaleString()}
+                    Range: {formatCurrency(breakdown.min)} -
+                    {formatCurrency(breakdown.max)}
                     <br />
                     Rate: {breakdown.rate}%
                     <br />
-                    Tax: ${breakdown.tax.toLocaleString()}
+                    Tax: {formatCurrency(breakdown.tax)}
                     <br />
-                    Take Home: ${breakdown.takeHome.toLocaleString()}
+                    Take Home: {formatCurrency(breakdown.takeHome)}
                   </div>
                 </div>
               );
