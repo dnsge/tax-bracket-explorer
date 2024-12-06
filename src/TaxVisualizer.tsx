@@ -13,7 +13,7 @@ const calculateTaxes = (brackets: TaxBracket[], income: number) => {
 
   for (let i = 0; i < brackets.length; i++) {
     const bracket = brackets[i];
-    const nextBracketMin = brackets[i + 1]?.min || Infinity;
+    const nextBracketMin = brackets[i + 1]?.min || income;
     const bracketMax = Math.min(nextBracketMin, income);
     const bracketMin = bracket.min;
 
